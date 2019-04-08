@@ -1,7 +1,7 @@
 // Graph ADT interface for Ass2 (COMP2521)
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <assert.h>
 #include "Graph.h"
 
 struct GraphRep{
@@ -85,15 +85,52 @@ bool adjacent(Graph g, Vertex src, Vertex dest) {
 }
 
 AdjList outIncident(Graph g, Vertex v) {
-	return NULL;
+	assert (g != NULL);
+	int j = 0;
+	while((g->NodeList[j] != NULL) && (j < g->nV)) {
+		if(g->NodeList[j]->w == v) {
+			break;          
+		}
+		j++;
+	}
+	AdjList vnode = g->NodeList[j];//find the node whose Vertex is equal to v
+	return vnode->next;
 }
 
 AdjList inIncident(Graph g, Vertex v) {
-	return NULL;
+	assert (g != NULL);
+	AdjList incoming_node; // create a list which is uesd to store outIncident nodes
+	AdjList head = NULL;
+	int i = 0;
+	while((g->NodeList[i] != NULL) && (i < g->nV)) {
+		AdjList temp = g->NodeList[i];
+		while(temp != NULL)
+			if(temp->next->w == v) {
+				incoming_node == temp->next;
+				incoming_node = incoming_node->next;
+				if(head == NULL) {
+					head = incoming_node;
+				}
+			}
+			temp = temp->next;
+			i++;
+	}
+	return incoming_node;
 }
 
 void  showGraph(Graph g) {
-
+	assert (g != NULL);
+	printf ("The number of V=%d, The number of E=%d\n", g->nV, g->nE);
+	int i = 0;
+	while((g->NodeList[i] != NULL) && (i < g->nV)) {
+		AdjList temp = g->NodeList[i];
+		while(temp->next != NULL) {
+			printf("From Vertex [%d] to Vertex [%d], the weight is %d\n", 
+			temp->w, temp->next->w, temp->next->weight);
+			temp = temp->next;
+		}
+		i++;
+	}
 }
 
 void  freeGraph(Graph g) {
