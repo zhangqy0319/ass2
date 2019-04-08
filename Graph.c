@@ -55,9 +55,9 @@ AdjList outIncident(Graph g, Vertex v) {
 		j++;
 	}
 	int i = 0;
-	while(vnode->next[i] != NULL) {
-		list_of_outgoing_nodes[i] = vnode->next[i];
-		i++;
+	while(vnode != NULL) {
+		list_of_outgoing_nodes[i] = vnode->next;
+		vnode = vnode->next;
 	}
 	return list_of_outgoing_nodes;
 }
@@ -65,18 +65,16 @@ AdjList outIncident(Graph g, Vertex v) {
 AdjList inIncident(Graph g, Vertex v) {
 	assert (g != NULL);
 	AdjList *list_of_incoming_nodes; // create a list which is uesd to store outIncident nodes
-	int j = 0; 
 	int i = 0;
-	int m = 0;
-	while(g->NodeList[j] != NULL) {
-		while(g->NodeList[j]->next[i] != NULL) {
-			if(g->NodeList[j]->next[i]->w == v) {
-				list_of_incoming_nodes[m] = g->NodeList[j];
-				m++;
+	int j = 0;
+	for (i = 0; i < g->nV; i++) {
+		while(g->NodeList[i] != NULL) {
+			if(g->NodeList[i]->next->w == v) {
+				list_of_incoming_nodes[j] == g->NodeList[i]->next;
+				j++;
 			}
-			i++;
+			g->NodeList[i] = g->NodeList[i]->next;
 		}
-		j++;
 	}
 	return list_of_incoming_nodes;
 }
@@ -85,12 +83,11 @@ void  showGraph(Graph g) {
 	assert (g != NULL);
 	printf ("The number of V=%d, The number of E=%d\n", g->nV, g->nE);
 	int i = 0;
-	int j = 0;
 	while(g->NodeList[i] != NULL) {
-		while(g->NodeList[i]->next[j] != NULL) {
+		while(g->NodeList[i]->next != NULL) {
 			printf("From Vertex [%d] to Vertex [%d], the weight is %d\n", 
-			g->NodeList[i]->w, g->NodeList[i]->next[j]->w, g->NodeList[i]->weight);
-			j++;
+			g->NodeList[i]->w, g->NodeList[i]->next->w, g->NodeList[i]->next->weight);
+			g->NodeList[i] = g->NodeList[i]->next;
 		}
 		i++;
 	}
