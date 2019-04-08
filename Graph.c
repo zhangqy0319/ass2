@@ -44,7 +44,26 @@ bool adjacent(Graph g, Vertex src, Vertex dest) {
 }
 
 AdjList outIncident(Graph g, Vertex v) {
-	return NULL;
+	assert g != NULL;
+	AdjList *list_of_outgoing_nodes; // create a list which is uesd to store outIncident nodes
+	int j = 0;
+	while(g->NodeList[j] != NULL) {
+		if(g->NodeList[j]->w == v) {
+			AdjList vnode = g->NodeList[j];//find the node whose Vertex is equal to v
+			break;          
+		}
+		j++;
+	}
+	int i = 0;
+	int j = 0;
+	while(g->NodeList[j] != NULL) {
+		if(vnode->next->w == g->NodeList[j]->w) {
+			list_of_outgoing_nodes[i] = g->NodeList[j];
+			i++;
+		}
+		j++;
+	}
+	return *list_of_outgoing_nodes;
 }
 
 AdjList inIncident(Graph g, Vertex v) {
