@@ -53,7 +53,6 @@ AdjList outIncident(Graph g, Vertex v) {
 		j++;
 	}
 	AdjList vnode = g->NodeList[j];//find the node whose Vertex is equal to v
-	int i = 0;
 	return vnode->next;
 }
 
@@ -62,8 +61,9 @@ AdjList inIncident(Graph g, Vertex v) {
 	AdjList incoming_node; // create a list which is uesd to store outIncident nodes
 	AdjList head = NULL;
 	int i = 0;
-		while((g->NodeList[i] != NULL) && (i < g->nV)) {
-			AdjList temp = g->NodeList[i];
+	while((g->NodeList[i] != NULL) && (i < g->nV)) {
+		AdjList temp = g->NodeList[i];
+		while(temp != NULL)
 			if(temp->next->w == v) {
 				incoming_node == temp->next;
 				incoming_node = incoming_node->next;
@@ -73,7 +73,7 @@ AdjList inIncident(Graph g, Vertex v) {
 			}
 			temp = temp->next;
 			i++;
-		}
+	}
 	return incoming_node;
 }
 
