@@ -15,12 +15,12 @@ static AdjList newAdjListnode(Vertex ,int);
 Graph newGraph(int noNodes) {
 	if (noNodes == 0) return NULL;
 
-	Graph g = malloc( sizeof *g);
+	Graph g = malloc(sizeof(g));
 	if (g == NULL) return NULL;
 
 	g->nV = noNodes;
 	g->nE = 0;
-	g->NodeList[noNodes]; 
+	g->NodeList[noNodes] = malloc(noNodes * sizeof(AdjList)); 
 	return g;
 }
 
@@ -32,7 +32,7 @@ int numVerticies(Graph g) {
 }
 
 void  insertEdge(Graph g, Vertex src, Vertex dest, int weight) {
-	if (src=dest) return;
+	if (src == dest) return;
 	AdjList curr = g->NodeList[src];
 	while(curr->next != NULL) curr = curr->next;
 	AdjList newnode = newAdjListnode(dest ,weight);
@@ -98,7 +98,7 @@ void  freeGraph(Graph g) {
 }
 
 static AdjList newAdjListnode(Vertex w, int weight){
-	AdjList node = malloc(sizeof *node);
+	AdjList node = malloc(sizeof(node));
 	node->weight = weight;
 	node->w = w;
 	node->next = NULL;
