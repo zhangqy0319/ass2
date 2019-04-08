@@ -1,7 +1,7 @@
 // Graph ADT interface for Ass2 (COMP2521)
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <assert.h>
 #include "Graph.h"
 
 struct GraphRep{
@@ -45,49 +45,48 @@ bool adjacent(Graph g, Vertex src, Vertex dest) {
 
 AdjList outIncident(Graph g, Vertex v) {
 	assert (g != NULL);
-	AdjList *list_of_outgoing_nodes; // create a list which is uesd to store outIncident nodes
 	int j = 0;
-	while(g->NodeList[j] != NULL) {
+	while((g->NodeList[j] != NULL) && (j < g->nV)) {
 		if(g->NodeList[j]->w == v) {
-			AdjList vnode = g->NodeList[j];//find the node whose Vertex is equal to v
 			break;          
 		}
 		j++;
 	}
+	AdjList vnode = g->NodeList[j];//find the node whose Vertex is equal to v
 	int i = 0;
-	while(vnode != NULL) {
-		list_of_outgoing_nodes[i] = vnode->next;
-		vnode = vnode->next;
-	}
-	return list_of_outgoing_nodes;
+	return vnode->next;
 }
 
 AdjList inIncident(Graph g, Vertex v) {
 	assert (g != NULL);
-	AdjList *list_of_incoming_nodes; // create a list which is uesd to store outIncident nodes
+	AdjList incoming_node; // create a list which is uesd to store outIncident nodes
+	AdjList head = NULL;
 	int i = 0;
-	int j = 0;
-	for (i = 0; i < g->nV; i++) {
-		while(g->NodeList[i] != NULL) {
-			if(g->NodeList[i]->next->w == v) {
-				list_of_incoming_nodes[j] == g->NodeList[i]->next;
-				j++;
+		while((g->NodeList[i] != NULL) && (i < g->nV)) {
+			AdjList temp = g->NodeList[i];
+			if(temp->next->w == v) {
+				incoming_node == temp->next;
+				incoming_node = incoming_node->next;
+				if(head == NULL) {
+					head = incoming_node;
+				}
 			}
-			g->NodeList[i] = g->NodeList[i]->next;
+			temp = temp->next;
+			i++;
 		}
-	}
-	return list_of_incoming_nodes;
+	return incoming_node;
 }
 
 void  showGraph(Graph g) {
 	assert (g != NULL);
 	printf ("The number of V=%d, The number of E=%d\n", g->nV, g->nE);
 	int i = 0;
-	while(g->NodeList[i] != NULL) {
-		while(g->NodeList[i]->next != NULL) {
+	while((g->NodeList[i] != NULL) && (i < g->nV)) {
+		AdjList temp = g->NodeList[i];
+		while(temp->next != NULL) {
 			printf("From Vertex [%d] to Vertex [%d], the weight is %d\n", 
-			g->NodeList[i]->w, g->NodeList[i]->next->w, g->NodeList[i]->next->weight);
-			g->NodeList[i] = g->NodeList[i]->next;
+			temp->w, temp->next->w, temp->next->weight);
+			temp = temp->next;
 		}
 		i++;
 	}
