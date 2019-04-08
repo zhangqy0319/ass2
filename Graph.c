@@ -10,7 +10,7 @@ struct GraphRep{
 	AdjList *NodeList; // List of nodes in graph
 };
 
-static AdjList newAdjListnode(Vertex ,int);
+static AdjList newAdjListnode(Vertex, int);
 
 Graph newGraph(int noNodes) {
 	if (noNodes == 0) return NULL;
@@ -35,7 +35,7 @@ void  insertEdge(Graph g, Vertex src, Vertex dest, int weight) {
 	if (src == dest) return;
 	AdjList curr = g->NodeList[src];
 	while(curr->next != NULL) curr = curr->next;
-	AdjList newnode = newAdjListnode(dest ,weight);
+	AdjList newnode = newAdjListnode(dest, weight);
 	curr->next = newnode;
 }
 
@@ -43,14 +43,14 @@ void  removeEdge(Graph g, Vertex src, Vertex dest) {
 	if (!adjacent(g, src, dest)) return;
 
 	AdjList delete;
-	if (g->NodeList[src]->w == dest){
+	if (g->NodeList[src]->w == dest) {
 		delete = g->NodeList[src];
 		g->NodeList[src] = delete->next;
 		free(delete);
 		return;
 	}
 	AdjList curr = g->NodeList[src];
-	while(curr->next != NULL){
+	while(curr->next != NULL) {
 		if (curr->next->w == dest) {
 			delete = curr->next;
 			curr->next = delete->next;
@@ -63,7 +63,7 @@ void  removeEdge(Graph g, Vertex src, Vertex dest) {
 
 bool adjacent(Graph g, Vertex src, Vertex dest) {
 	AdjList curr = g->NodeList[src];
-	while(curr != NULL){
+	while(curr != NULL) {
 		if (curr->w == dest) return true;
 		curr = curr->next;
 	}
@@ -85,9 +85,9 @@ void  showGraph(Graph g) {
 void  freeGraph(Graph g) {
 	if (g == NULL) return;
 
-	for(int i = 0; i < g->nV; i++){
+	for(int i = 0; i < g->nV; i++) {
 		AdjList curr = g->NodeList[i], old;
-		while(curr != NULL){
+		while(curr != NULL) {
 			old = curr;
 			curr = curr->next;
 			free(old);
@@ -97,7 +97,7 @@ void  freeGraph(Graph g) {
 	free(g);
 }
 
-static AdjList newAdjListnode(Vertex w, int weight){
+static AdjList newAdjListnode(Vertex w, int weight) {
 	AdjList node = malloc(sizeof(node));
 	node->weight = weight;
 	node->w = w;
