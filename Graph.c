@@ -20,7 +20,10 @@ Graph newGraph(int noNodes) {
 
 	g->nV = noNodes;
 	g->nE = 0;
-	g->NodeList[noNodes] = malloc(noNodes * sizeof(AdjList)); 
+	g->NodeList[noNodes] = malloc(noNodes * sizeof(AdjList));
+	for (int i = 0; i < noNodes; i++){
+		g->NodeList[i] = newAdjListnode(i, 0);
+	} 
 	return g;
 }
 
@@ -32,29 +35,38 @@ int numVerticies(Graph g) {
 }
 
 void  insertEdge(Graph g, Vertex src, Vertex dest, int weight) {
-	if (src == dest) return;
-	AdjList curr = g->NodeList[src];
+	if (g == NULL || weight <= 0) return;
+	if (g->NodeList[src]->next == NULL) {
+		AdjList newnode = newAdjListnode(dest, weight);
+		g->NodeList[src]->next = newnode;
+		return;
+	}
+	AdjList curr = g->NodeList[src]->next;
 	while(curr->next != NULL) curr = curr->next;
 	AdjList newnode = newAdjListnode(dest, weight);
 	curr->next = newnode;
+	g->nE++;
 }
 
 void  removeEdge(Graph g, Vertex src, Vertex dest) {
+	if (g == NULL) return;
 	if (!adjacent(g, src, dest)) return;
 
-	AdjList delete;
-	if (g->NodeList[src]->w == dest) {
-		delete = g->NodeList[src];
-		g->NodeList[src] = delete->next;
+	AdjList delete,	 curr = g->NodeList[src]->next;
+	if (curr->w == dest) {
+		delete = curr;
+		g->NodeList[src]->next = delete->next;
 		free(delete);
+		g->nE--;
 		return;
 	}
-	AdjList curr = g->NodeList[src];
 	while(curr->next != NULL) {
 		if (curr->next->w == dest) {
 			delete = curr->next;
-			curr->next = delete->next;
+			if (delete->next != NULL) curr->next = delete->next;
+			else curr->next = NULL;
 			free(delete);
+			g->nE--;
 			return;
 		}
 		curr = curr->next;
@@ -62,7 +74,8 @@ void  removeEdge(Graph g, Vertex src, Vertex dest) {
 }
 
 bool adjacent(Graph g, Vertex src, Vertex dest) {
-	AdjList curr = g->NodeList[src];
+	if (g == NULL) return;
+	AdjList curr = g->NodeList[src]->next;
 	while(curr != NULL) {
 		if (curr->w == dest) return true;
 		curr = curr->next;
