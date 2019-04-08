@@ -1,30 +1,40 @@
+# Makefile for Ass2
 
-CC  = 	gcc
+CC = gcc
+CFLAGS =  -Wall -std=c11 -Werror -g
+AR = ar
+objs = Graph.o GraphVis.o CentralityMeasures.o PQ.o Dijkstra.o GraphRead.o 
 
-.PHONY:	all
+all : testGraph testPQ testDijkstra testCentralityMeasures testLanceWilliamsHAC
 
-all:	Graph PQ Dijkstra CentralityMeasures LanceWilliamsHAC
+$(objs) : %.o : %.c
 
-Graph:		Graph.o
-Graph.o:	Graph.h	Graph.c
+GraphLib.a : $(objs)
+	$(AR) rcs $@ $^
 
-# PQ:			PQ.o
-# PQ.o:		PQ.h	PQ.c
+testGraph : testGraph.c BSTree.o GraphLib.a
+	$(CC) -o testGraph testGraph.c BSTree.o GraphLib.a -lm
 
-# Dijkstra:	Dijkstra.o
-# Dijkstra.o:	Dijkstra.h	Dijkstra.c
+testPQ : testPQ.c PQ.o
+	$(CC) -o testPQ  testPQ.c PQ.o -lm
 
-# CentralityMeasures:	CentralityMeasures.o
-# CentralityMeasures.o:	CentralityMeasures.h	CentralityMeasures.c
+testDijkstra : testDijkstra.c GraphLib.a
+	$(CC) -o  testDijkstra testDijkstra.c GraphLib.a -lm
 
-# LanceWilliamsHAC:	LanceWilliamsHAC.o
-# LanceWilliamsHAC:	LanceWilliamsHAC.h	LanceWilliamsHAC.c
+testCentralityMeasures : testCentralityMeasures.c GraphLib.a
+	$(CC) -o testCentralityMeasures testCentralityMeasures.c GraphLib.a -lm
 
-.PHONY:	clean
 
-clean:
-	-rm -f Graph Graph.o
-	-rm -f PQ PQ.o
-	-rm -f Dijkstra Dijkstra.o
-	-rm -f CentralityMeasures CentralityMeasures.o
-	-rm -f LanceWilliamsHAC LanceWilliamsHAC.o
+BSTree.o : BSTree.c BSTree.h 
+	$(CC)  -c   BSTree.c  
+
+LanceWilliamsHAC.o : LanceWilliamsHAC.c Graph.o  BSTree.o 
+	$(CC)  $(CFLAGS) -c  -o LanceWilliamsHAC.o LanceWilliamsHAC.c    -lm
+
+testLanceWilliamsHAC : testLanceWilliamsHAC.c Graph.h  Graph.o LanceWilliamsHAC.o BSTree.o GraphRead.o
+	$(CC)   -o  testLanceWilliamsHAC testLanceWilliamsHAC.c Graph.o BSTree.o GraphRead.o LanceWilliamsHAC.o  -lm
+
+clean :
+	rm -f *.o testCentralityMeasures testDijkstra testGraph testPQ  testLanceWilliamsHAC GraphLib.a
+	
+	

@@ -1,15 +1,40 @@
-# include <stdio.h>
-# include "PQ.h"
+// PQ ADT interface for Ass2 (COMP2521)
+#include "PQ.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
 
-PQ newPQ();
 
-void  addPQ(PQ, ItemPQ);
+struct PQRep {
 
-ItemPQ  dequeuePQ(PQ);
+};
 
-void  updatePQ(PQ, ItemPQ);
 
-int PQEmpty(PQ);
+PQ newPQ() {
+	return NULL;
+}
 
-void  showPQ(PQ);
-void  freePQ(PQ);
+int PQEmpty(PQ p) {
+		return 0;
+}
+
+void addPQ(PQ pq, ItemPQ element) {
+
+}
+
+ItemPQ dequeuePQ(PQ pq) {
+	ItemPQ throwAway = {0};
+	return throwAway;
+}
+
+void updatePQ(PQ pq, ItemPQ element) {
+
+}
+
+void  showPQ(PQ pq) {
+
+}
+
+void  freePQ(PQ pq) {
+
+}
