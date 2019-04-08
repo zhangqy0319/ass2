@@ -39,6 +39,7 @@ void  insertEdge(Graph g, Vertex src, Vertex dest, int weight) {
 	if (g->NodeList[src]->next == NULL) {
 		AdjList newnode = newAdjListnode(dest, weight);
 		g->NodeList[src]->next = newnode;
+		g->nE++;
 		return;
 	}
 	AdjList curr = g->NodeList[src]->next;
