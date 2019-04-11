@@ -33,27 +33,39 @@ int PQEmpty(PQ p) {
 
 void addPQ(PQ pq, ItemPQ element) {
 	PQnode new = newPQnode(element), curr;
-	curr = pq->head;
-	while (curr != NULL) curr = curr->next;
-	curr->next = new;
+	if(pq->len == 0) pq->head = new;
+	else{
+		curr = pq->head;
+		while (curr->next != NULL) curr = curr->next;
+		curr->next = new;
+	}
 	pq->len++;
 }
 
 ItemPQ dequeuePQ(PQ pq) {
 	assert(pq != NULL);
 	ItemPQ throwAway = {0};
-	PQnode curr = pq->head, mark;
-	throwAway = pq->head->item;
-	while(curr != NULL){
-		if (curr->item.value < throwAway.value){
-			mark = curr;
-			throwAway = curr->item;
-		}
-		curr = curr->next;
+	if (pq->len == 1){
+		throwAway = pq->head->item;
+		free(pq->head);
+		pq->head = NULL;
 	}
-	curr = pq->head;
-	while (curr->next != mark) curr = curr->next;
-	curr->next = mark->next;
+	else{
+		PQnode curr = pq->head, mark;
+		throwAway = pq->head->item;
+		while(curr != NULL){
+			if (curr->item.value < throwAway.value){
+				mark = curr;
+				throwAway = curr->item;
+			}
+			curr = curr->next;
+		}
+		curr = pq->head;
+		while (curr->next != mark) curr = curr->next;
+		curr->next = mark->next;
+		free(mark);
+	}
+	pq->len--;
 	return throwAway;
 }
 
