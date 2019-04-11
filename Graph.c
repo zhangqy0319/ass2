@@ -1,7 +1,7 @@
 // Graph ADT interface for Ass2 (COMP2521)
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
+
 #include "Graph.h"
 
 struct GraphRep{
@@ -20,7 +20,7 @@ Graph newGraph(int noNodes) {
 
 	g->nV = noNodes;
 	g->nE = 0;
-	g->NodeList[noNodes] = malloc(noNodes * sizeof(AdjList));
+	g->NodeList = malloc(noNodes * sizeof(AdjList));
 	for (int i = 0; i < noNodes; i++){
 		g->NodeList[i] = newAdjListnode(i, 0);
 	} 
@@ -85,7 +85,7 @@ bool adjacent(Graph g, Vertex src, Vertex dest) {
 }
 
 AdjList outIncident(Graph g, Vertex v) {
-	assert (g != NULL);
+	if (g == NULL) return NULL;
 	int j = 0;
 	while((g->NodeList[j] != NULL) && (j < g->nV)) {
 		if(g->NodeList[j]->w == v) {
@@ -98,28 +98,38 @@ AdjList outIncident(Graph g, Vertex v) {
 }
 
 AdjList inIncident(Graph g, Vertex v) {
-	assert (g != NULL);
-	AdjList incoming_node; // create a list which is uesd to store outIncident nodes
-	AdjList head = NULL;
+	if (g == NULL) return NULL;
+	AdjList head = NULL, curr ,subcurr;
 	int i = 0;
-	while((g->NodeList[i] != NULL) && (i < g->nV)) {
-		AdjList temp = g->NodeList[i];
-		while(temp != NULL)
-			if(temp->next->w == v) {
-				incoming_node == temp->next;
-				incoming_node = incoming_node->next;
-				if(head == NULL) {
-					head = incoming_node;
+	while (g->NodeList[i] != NULL)
+	{
+		curr = g->NodeList[i]->next;
+		while (curr != NULL)
+		{
+			if (curr->w == v)
+			{
+				AdjList new = newAdjListnode(i,curr->weight);
+				if (head == NULL) 
+				{
+					head = new;
+					subcurr = head;
 				}
+				else
+				{
+					subcurr->next = new;
+					subcurr = subcurr->next;
+				}
+				
 			}
-			temp = temp->next;
-			i++;
+			curr = curr->next;
+		}
+		i++;
 	}
-	return incoming_node;
+	return head;
 }
 
 void  showGraph(Graph g) {
-	assert (g != NULL);
+	if (g == NULL) return;
 	printf ("The number of V=%d, The number of E=%d\n", g->nV, g->nE);
 	int i = 0;
 	while((g->NodeList[i] != NULL) && (i < g->nV)) {
