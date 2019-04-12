@@ -145,48 +145,6 @@ AdjList inIncident(Graph g, Vertex v) {
 	}
 	AdjList vnode = g->inNodeList[j];//find the node whose Vertex is equal to v
 	return vnode->next;
-// 	AdjList head = NULL, curr ,subcurr;
-// 	int i = 0;
-// 	while (g->outNodeList[i] != NULL)
-// 	{
-// 		curr = g->outNodeList[i]->next;
-// 		while (curr != NULL)
-// 		{
-// 			if (curr->w == v)
-// 			{
-// 				AdjList new = newAdjListnode(i,curr->weight);
-// 				if (head == NULL) 
-// 				{
-// 					head = new;
-// 					subcurr = head;
-// 				}
-// 				else
-// 				{
-// 					subcurr->next = new;
-// 					subcurr = subcurr->next;
-// 				}
-				
-// 			}
-// 			curr = curr->next;
-// 		}
-// 		i++;
-// 	}
-// 	return head;
-// }
-
-// void  showGraph(Graph g) {
-// 	if (g == NULL) return;
-// 	printf ("The number of V=%d, The number of E=%d\n", g->nV, g->nE);
-// 	int i = 0;
-// 	while((g->outNodeList[i] != NULL) && (i < g->nV)) {
-// 		AdjList temp = g->outNodeList[i];
-// 		while(temp->next != NULL) {
-// 			printf("From Vertex [%d] to Vertex [%d], the weight is %d\n", 
-// 			temp->w, temp->next->w, temp->next->weight);
-// 			temp = temp->next;
-// 		}
-// 		i++;
-// 	}
 }
 
 void  freeGraph(Graph g) {
