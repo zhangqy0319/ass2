@@ -36,7 +36,17 @@ void addPQ(PQ pq, ItemPQ element) {
 	if(pq->len == 0) pq->head = new;
 	else{
 		curr = pq->head;
-		while (curr->next != NULL) curr = curr->next;
+		while (curr->next != NULL) { 
+			if (curr->item.key == element.key){ // Check whether is existed
+				curr->item.value = element.value;
+				return;
+			}
+			curr = curr->next;
+		}
+		if (curr->item.key == element.key){ // Check the last node
+				curr->item.value = element.value;
+				return;
+		}
 		curr->next = new;
 	}
 	pq->len++;
