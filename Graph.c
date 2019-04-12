@@ -19,101 +19,94 @@ Graph newGraph(int noNodes) {
 	if (g == NULL) return NULL;
 	g->nV = noNodes;
 	g->nE = 0;
-	g->outNodeList = malloc(noNodes * sizeof(AdjList)); //initialize outNodeList
+	g->outNodeList = malloc(noNodes * sizeof(AdjList));
+	g->inNodeList = malloc(noNodes * sizeof(AdjList));
 	for (int i = 0; i < noNodes; i++){
-		g->outNodeList[i] = newAdjListnode(i, 0);
-	} 
-	g->inNodeList = malloc(noNodes * sizeof(AdjList)); //initialize intNodeList
-	for (int i = 0; i < noNodes; i++){
-		g->inNodeList[i] = newAdjListnode(i, 0);
-	} 
+		g->outNodeList[i] = NULL;
+		g->inNodeList[i] = NULL;
+	}
 	return g;
 }
 
 int numVerticies(Graph g) {
-	if (g == NULL) {
-		return 0;
-	}
+	if (g == NULL) return 0;
 	return g->nV;
 }
 
 void  insertEdge(Graph g, Vertex src, Vertex dest, int weight) {
 	if (g == NULL || weight <= 0) return;
-	if (g->outNodeList[src]->next == NULL) { //initialize outNodeList
-		AdjList newnode = newAdjListnode(dest, weight);
-		g->outNodeList[src]->next = newnode;
-		g->nE++;
+
+	// insert to outNodeList
+	AdjList newnode = newAdjListnode(dest, weight);
+	if (g->outNodeList[src] == NULL) { // No outward edge recorded
+		g->outNodeList[src] = newnode;	
 	}
 	else {
-		AdjList curr = g->outNodeList[src]->next;
+		AdjList curr = g->outNodeList[src];
 		while(curr->next != NULL) curr = curr->next;
-		AdjList newnode = newAdjListnode(dest, weight);
 		curr->next = newnode;
-		g->nE++;
 	}
 
-	if (g->inNodeList[dest]->next == NULL) { //initialize inNodeList
-		AdjList newnode = newAdjListnode(src, weight);
-		g->inNodeList[dest]->next = newnode;
+	// insert to inNodeList
+	newnode = newAdjListnode(src, weight);
+	if (g->inNodeList[dest] == NULL) {  // No inward edge recorded
+		g->inNodeList[dest] = newnode;
 	}
 	else {
-		AdjList curr = g->inNodeList[dest]->next;
+		AdjList curr = g->inNodeList[dest];
 		while(curr->next != NULL) curr = curr->next;
-		AdjList newnode = newAdjListnode(src, weight);
 		curr->next = newnode;
 	}
+	g->nE++;
 }
 
 void  removeEdge(Graph g, Vertex src, Vertex dest) {
 	if (g == NULL) return;
 	if (!adjacent(g, src, dest)) return;
-	//initialize outNodeList
-	AdjList delete,	 curr = g->outNodeList[src]->next;
-	if (curr->w == dest) {
+
+	// remove edge from outNodeList
+	AdjList delete, curr = g->outNodeList[src];
+	if (curr->w == dest) { // At the head
 		delete = curr;
-		g->outNodeList[src]->next = delete->next;
+		g->outNodeList[src] = delete->next;
 		free(delete);
-		g->nE--;
 	}
 	else {
 		while(curr->next != NULL) {
 			if (curr->next->w == dest) {
 				delete = curr->next;
-				if (delete->next != NULL) curr->next = delete->next;
-				else curr->next = NULL;
+				curr->next = delete->next;
 				free(delete);
-				g->nE--;
 				break;
 			}
 			curr = curr->next;
 		}
 	}
-	// //initialize inNodeList
-	AdjList delete1,	 curr1 = g->inNodeList[dest]->next;
-	if(curr1->w == src) {
-		delete1 = curr1;
-		g->inNodeList[dest]->next = delete1->next;
-		free(delete1);
+
+	// remove edge from inNodeList
+	curr = g->inNodeList[dest];
+	if(curr->w == src) { // At the head
+		delete = curr;
+		g->inNodeList[dest] = delete->next;
+		free(delete);
 	}
 	else {
-		while(curr1->next != NULL) {
-			if (curr1->next->w == src) {
-				delete1 = curr1->next;
-				if (delete1->next != NULL) curr1->next = delete1->next;
-				else curr1->next = NULL;
-				free(delete1);
+		while(curr->next != NULL) {
+			if (curr->next->w == src) {
+				delete = curr->next;
+				curr->next = delete->next;
+				free(delete);
 				break;
 			}
-			curr1 = curr1->next;
+			curr = curr->next;
 		}
 	}
-
-
+	g->nE--;
 }
 
 bool adjacent(Graph g, Vertex src, Vertex dest) {
 	if (g == NULL) return 0;
-	AdjList curr = g->outNodeList[src]->next;
+	AdjList curr = g->outNodeList[src];
 	while(curr != NULL) {
 		if (curr->w == dest) return true;
 		curr = curr->next;
@@ -123,28 +116,12 @@ bool adjacent(Graph g, Vertex src, Vertex dest) {
 
 AdjList outIncident(Graph g, Vertex v) {
 	if (g == NULL) return NULL;
-	int j = 0;
-	while((g->outNodeList[j] != NULL) && (j < g->nV)) {
-		if(g->outNodeList[j]->w == v) {
-			break;          
-		}
-		j++;
-	}
-	AdjList vnode = g->outNodeList[j];//find the node whose Vertex is equal to v
-	return vnode->next;
+	return g->outNodeList[v];
 }
 
 AdjList inIncident(Graph g, Vertex v) {
 	if (g == NULL) return NULL;
-	int j = 0;
-	while((g->inNodeList[j] != NULL) && (j < g->nV)) {
-		if(g->inNodeList[j]->w == v) {
-			break;          
-		}
-		j++;
-	}
-	AdjList vnode = g->inNodeList[j];//find the node whose Vertex is equal to v
-	return vnode->next;
+	return g->inNodeList[v];
 }
 
 void  freeGraph(Graph g) {
@@ -157,6 +134,7 @@ void  freeGraph(Graph g) {
 			curr = curr->next;
 			free(old);
 		}
+		free(g->outNodeList[i]);
 	}
 	for(int i = 0; i < g->nV; i++) {
 		AdjList curr = g->inNodeList[i], old;
@@ -165,6 +143,7 @@ void  freeGraph(Graph g) {
 			curr = curr->next;
 			free(old);
 		}
+		free(g->inNodeList[i]);
 	}
 	free(g->outNodeList);
 	free(g->inNodeList);
