@@ -38,16 +38,14 @@ ShortestPaths dijkstra(Graph g, Vertex v) {
 					while (predcurr->next != NULL) predcurr = predcurr->next;
 					predcurr->next = newPredNode(dest);
 				}
-					ItemPQ node;
-					node.key = dest;
-					node.value = throwAway.dist[curr] + weight;
-					addPQ(todo, node);
+				ItemPQ node;
+				node.key = dest;
+				node.value = throwAway.dist[curr] + weight;
+				addPQ(todo, node);
 			}
 			outnode = outnode->next;
 		}
-		
 	}
-	
 	return throwAway;
 }
 

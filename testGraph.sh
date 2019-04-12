@@ -21,8 +21,3 @@ else
   echo -e " ${RED} Expected output in: ./output/TestGraph.exp ${NC}"
   echo -e "=========== ${RED} End of Output Mismatch${NC} ============"
 fi
-
-
-  
-
-
