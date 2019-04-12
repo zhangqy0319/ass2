@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#define INF 2147483647
+#define INF 2147483647 // = 2^31
 
 typedef struct PredNode *PredNodePtr;
 
@@ -57,14 +57,14 @@ void showShortestPaths(ShortestPaths paths) {
 	}
 	printf("  Preds\n");
 	for(int i = 0; i < paths.noNodes; i++) {
-		printf("    %d : ");
+		printf("    %d : ", i);
 		if(paths.pred[i] == NULL) {
 			printf("NULL\n");
 		}
 		else {
 			PredNodePtr temp = paths.pred[i];
 			while(temp != NULL) {
-				printf("[%d]->", temp);
+				printf("[%d]->", temp->v);
 				temp = temp->next;
 			}
 			printf("NULL\n");			
@@ -74,6 +74,17 @@ void showShortestPaths(ShortestPaths paths) {
 
 
 void  freeShortestPaths(ShortestPaths paths) {
+	free(paths.dist);
+	for (int i = 0; i < paths.noNodes; i++){
+		PredNodePtr curr = paths.pred[i], delete;
+		while (curr != NULL){
+			delete = curr;
+			curr = curr->next;
+			free(delete);
+		}
+		free(paths.pred[i]);
+	}
+	free(paths.pred);
 	return;
 }
 
