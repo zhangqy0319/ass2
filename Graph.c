@@ -25,7 +25,7 @@ Graph newGraph(int noNodes) {
 	for (int i = 0; i < noNodes; i++){
 		g->outNodeList[i] = newAdjListnode(i, 0);
 	} 
-	g->outNodeList = malloc(noNodes * sizeof(AdjList)); //initialize intNodeList
+	g->inNodeList = malloc(noNodes * sizeof(AdjList)); //initialize intNodeList
 	for (int i = 0; i < noNodes; i++){
 		g->inNodeList[i] = newAdjListnode(i, 0);
 	} 
