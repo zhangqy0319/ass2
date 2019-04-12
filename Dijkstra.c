@@ -82,7 +82,6 @@ void  freeShortestPaths(ShortestPaths paths) {
 			curr = curr->next;
 			free(delete);
 		}
-		free(paths.pred[i]);
 	}
 	free(paths.pred);
 	return;

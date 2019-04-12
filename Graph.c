@@ -134,7 +134,6 @@ void  freeGraph(Graph g) {
 			curr = curr->next;
 			free(old);
 		}
-		free(g->outNodeList[i]);
 	}
 	for(int i = 0; i < g->nV; i++) {
 		AdjList curr = g->inNodeList[i], old;
@@ -143,7 +142,6 @@ void  freeGraph(Graph g) {
 			curr = curr->next;
 			free(old);
 		}
-		free(g->inNodeList[i]);
 	}
 	free(g->outNodeList);
 	free(g->inNodeList);
