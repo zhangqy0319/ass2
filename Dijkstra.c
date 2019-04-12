@@ -22,13 +22,10 @@ ShortestPaths dijkstra(Graph g, Vertex v) {
 	ItemPQ firstnode;
 	firstnode.key = v; 
 	firstnode.value = 0; 
-	int Visited[numVerticies(g)];
-	for (int i = 0; i < numVerticies(g); i++ ) Visited[i] = 0;
 	addPQ(todo, firstnode);
 
 	while (!PQEmpty(todo)){
 		Vertex curr = dequeuePQ(todo).key;
-		Visited[curr] = 1;
 		AdjList outnode = outIncident(g, curr);
 		while (outnode != NULL){
 			Vertex dest = outnode->w;
@@ -41,12 +38,10 @@ ShortestPaths dijkstra(Graph g, Vertex v) {
 					while (predcurr->next != NULL) predcurr = predcurr->next;
 					predcurr->next = newPredNode(dest);
 				}
-				//if (Visited[dest] == 0) {
 					ItemPQ node;
 					node.key = dest;
 					node.value = throwAway.dist[curr] + weight;
 					addPQ(todo, node);
-				//}
 			}
 			outnode = outnode->next;
 		}
@@ -57,7 +52,26 @@ ShortestPaths dijkstra(Graph g, Vertex v) {
 }
 
 void showShortestPaths(ShortestPaths paths) {
-	return;
+	printf("Node %d\n", paths.src);
+	printf("  Distance\n");
+	for(int i = 0; i < paths.noNodes; i++) {
+		printf("    %d : %d\n", i, paths.dist[i]);
+	}
+	printf("  Preds\n");
+	for(int i = 0; i < paths.noNodes; i++) {
+		printf("    %d : ");
+		if(paths.pred[i] == NULL) {
+			printf("NULL\n");
+		}
+		else {
+			PredNodePtr temp = paths.pred[i];
+			while(temp != NULL) {
+				printf("[%d]->", temp);
+				temp = temp->next;
+			}
+			printf("NULL\n");			
+		}
+	}
 }
 
 
