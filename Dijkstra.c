@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#define INF 2147483647 // = 2^31
+#define INF 2147483647 // = 2^31-1
 
 typedef struct PredNode *PredNodePtr;
 
@@ -17,7 +17,7 @@ ShortestPaths dijkstra(Graph g, Vertex v) {
 	assert(g != NULL);
 	ShortestPaths throwAway = {0};
 	throwAway = newShortestPaths(g, v);
-	throwAway.dist[v] = 0; // Set distance to src = 0
+	throwAway.dist[v] = 0; // Set the distance to src equal 0
 	PQ todo = newPQ();
 	ItemPQ firstnode;
 	firstnode.key = v; 
@@ -27,21 +27,32 @@ ShortestPaths dijkstra(Graph g, Vertex v) {
 	while (!PQEmpty(todo)){
 		Vertex curr = dequeuePQ(todo).key;
 		AdjList outnode = outIncident(g, curr);
-		while (outnode != NULL){
+		while (outnode != NULL){ // Get all outIncident's destinations
 			Vertex dest = outnode->w;
 			int weight = outnode->weight;
-			if (throwAway.dist[curr] + weight < throwAway.dist[dest]){
+			// Distance from src to curr < Distance from src to destination
+			if (throwAway.dist[curr] + weight < throwAway.dist[dest]){ 
 				throwAway.dist[dest] = throwAway.dist[curr] + weight;
-				if (throwAway.pred[dest] == NULL) throwAway.pred[dest] = newPredNode(dest);
+				PredNodePtr predcurr = throwAway.pred[dest], delete;
+				while (predcurr != NULL) { // Delete the whole list
+					delete = predcurr;
+					predcurr = predcurr->next;
+					free(delete);
+				}
+				throwAway.pred[curr] = newPredNode(curr);
+				ItemPQ node;
+				node.key = dest;
+				node.value = throwAway.dist[dest];
+				addPQ(todo, node);
+			}
+			else if(throwAway.dist[curr] + weight == throwAway.dist[dest]){
+				// If predecessor list is empty
+				if (throwAway.pred[dest] == NULL) throwAway.pred[dest] = newPredNode(curr);
 				else{
 					PredNodePtr predcurr = throwAway.pred[dest];
 					while (predcurr->next != NULL) predcurr = predcurr->next;
-					predcurr->next = newPredNode(dest);
+					predcurr->next = newPredNode(curr);
 				}
-				ItemPQ node;
-				node.key = dest;
-				node.value = throwAway.dist[curr] + weight;
-				addPQ(todo, node);
 			}
 			outnode = outnode->next;
 		}
