@@ -23,7 +23,7 @@ ShortestPaths dijkstra(Graph g, Vertex v) {
 	firstnode.key = v; 
 	firstnode.value = 0; 
 	addPQ(todo, firstnode);
-
+	
 	while (!PQEmpty(todo)){
 		Vertex curr = dequeuePQ(todo).key;
 		AdjList outnode = outIncident(g, curr);
@@ -39,7 +39,7 @@ ShortestPaths dijkstra(Graph g, Vertex v) {
 					predcurr = predcurr->next;
 					free(delete);
 				}
-				throwAway.pred[curr] = newPredNode(curr);
+				throwAway.pred[dest] = newPredNode(curr);
 				ItemPQ node;
 				node.key = dest;
 				node.value = throwAway.dist[dest];
@@ -56,6 +56,9 @@ ShortestPaths dijkstra(Graph g, Vertex v) {
 			}
 			outnode = outnode->next;
 		}
+	}
+	for (int i = 0; i < throwAway.noNodes; i++){ // Check unreachable vertices
+		if (throwAway.dist[i] == INF) throwAway.dist[i] = 0;
 	}
 	return throwAway;
 }
@@ -95,7 +98,6 @@ void  freeShortestPaths(ShortestPaths paths) {
 		}
 	}
 	free(paths.pred);
-	return;
 }
 
 static ShortestPaths newShortestPaths(Graph g, Vertex v){

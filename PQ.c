@@ -61,7 +61,7 @@ ItemPQ dequeuePQ(PQ pq) {
 		pq->head = NULL;
 	}
 	else{
-		PQnode curr = pq->head, mark;
+		PQnode curr = pq->head, mark = pq->head;
 		throwAway = pq->head->item;
 		while(curr != NULL){
 			if (curr->item.value < throwAway.value){
@@ -71,8 +71,11 @@ ItemPQ dequeuePQ(PQ pq) {
 			curr = curr->next;
 		}
 		curr = pq->head;
-		while (curr->next != mark) curr = curr->next;
-		curr->next = mark->next;
+		if (curr == mark) pq->head = mark->next;
+		else {
+			while (curr->next != mark) curr = curr->next;
+			curr->next = mark->next;
+		}
 		free(mark);
 	}
 	pq->len--;
