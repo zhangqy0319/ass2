@@ -28,28 +28,43 @@ PQ newPQ() {
 }
 
 int PQEmpty(PQ p) {
+	assert(p != NULL);
 	return p->len == 0;
 }
 
 void addPQ(PQ pq, ItemPQ element) {
-	PQnode new = newPQnode(element), curr;
+	assert(pq != NULL);
+	PQnode new = newPQnode(element), curr = pq->head, mark = NULL;
 	if(pq->len == 0) pq->head = new;
 	else{
-		curr = pq->head;
-		while (curr->next != NULL) { 
-			if (curr->item.key == element.key){ // Check whether is existed
-				curr->item.value = element.value;
-				return;
+		while(curr != NULL){ // Iterate the whole list to check if it exists
+			if (curr->item.key == element.key){
+				mark = curr;
+				break;
 			}
 			curr = curr->next;
 		}
-		if (curr->item.key == element.key){ // Check the last node
-				curr->item.value = element.value;
-				return;
+		if (mark != NULL) { // If exist
+			if (pq->head == mark){ // Check the head
+				if (pq->len == 1){
+					pq->head->item.value = element.value;
+					free(new);
+					return;
+				}
+				pq->head = mark->next;
+			}
+			else{
+				curr = pq->head;
+				while (curr->next != mark) curr = curr->next;
+				curr->next = mark->next;
+			}
+			free(mark);
 		}
+		curr = pq->head;	
+		while(curr->next != NULL) curr = curr->next; // Add to the end
 		curr->next = new;
 	}
-	pq->len++;
+	if (mark == NULL) pq->len++;
 }
 
 ItemPQ dequeuePQ(PQ pq) {
