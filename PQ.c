@@ -34,37 +34,23 @@ int PQEmpty(PQ p) {
 
 void addPQ(PQ pq, ItemPQ element) {
 	assert(pq != NULL);
-	PQnode new = newPQnode(element), curr = pq->head, mark = NULL;
+	PQnode new = newPQnode(element), curr = pq->head;
 	if(pq->len == 0) pq->head = new;
 	else{
 		while(curr != NULL){ // Iterate the whole list to check if it exists
 			if (curr->item.key == element.key){
-				mark = curr;
-				break;
+				updatePQ(pq, element);
+				free(new);
+				return;
 			}
 			curr = curr->next;
 		}
-		if (mark != NULL) { // If exist
-			if (pq->head == mark){ // Check the head
-				if (pq->len == 1){
-					pq->head->item.value = element.value;
-					free(new);
-					return;
-				}
-				pq->head = mark->next;
-			}
-			else{
-				curr = pq->head;
-				while (curr->next != mark) curr = curr->next;
-				curr->next = mark->next;
-			}
-			free(mark);
-		}
+		// If the key is not in PQ
 		curr = pq->head;	
-		while(curr->next != NULL) curr = curr->next; // Add to the end
+		while(curr->next != NULL) curr = curr->next;
 		curr->next = new;
 	}
-	if (mark == NULL) pq->len++;
+	pq->len++;
 }
 
 ItemPQ dequeuePQ(PQ pq) {
@@ -99,13 +85,32 @@ ItemPQ dequeuePQ(PQ pq) {
 
 void updatePQ(PQ pq, ItemPQ element) {
 	assert(pq != NULL);
-	PQnode curr = pq->head;
-	while (curr != NULL){
+	PQnode curr = pq->head, mark = NULL;
+	while(curr != NULL){ // Find the same key
 		if (curr->item.key == element.key){
-			curr->item =element;
+			mark = curr;
 			break;
 		}
 		curr = curr->next;
+	}
+	if (mark != NULL) { // If exist
+		if (pq->head == mark){ // Check the head
+			if (pq->len == 1){
+				pq->head->item.value = element.value;
+				return;
+			}
+			pq->head = mark->next;
+		}
+		else{
+			curr = pq->head;
+			while (curr->next != mark) curr = curr->next;
+			curr->next = mark->next;
+		}
+		free(mark);
+		curr = pq->head;
+		while(curr->next != NULL) curr = curr->next; // Add to the end
+		PQnode new = newPQnode(element);
+		curr->next = new;
 	}
 }
 
