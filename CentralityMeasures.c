@@ -11,13 +11,16 @@ NodeValues outDegreeCentrality(Graph g){
 		.noNodes = num,
 		.values = malloc(num * sizeof(double))
 	};
+// printf("fffdf\n");
 	for(int i = 0; i < num; i++){
-		int count = 0;
+		double count = 0;
 		AdjList node = outIncident(g, i);
+// printf("fefqqq^^\n");
 		while(node != NULL){
 			count++;
 			node = node->next;
 		}
+// printf("qqoooo\n");
 		throwAway.values[i] = count;
 	}
 	return throwAway;
@@ -29,7 +32,7 @@ NodeValues inDegreeCentrality(Graph g){
 		.values = malloc(num * sizeof(double))
 	};
 	for(int i = 0; i < num; i++){
-		int count = 0;
+		double count = 0;
 		AdjList node = inIncident(g, i);
 		while(node != NULL){
 			count++;
@@ -46,7 +49,7 @@ NodeValues degreeCentrality(Graph g) {
 		.values = malloc(num * sizeof(double))
 	};
 	for(int i = 0; i < num; i++){
-		int count = 0;
+		double count = 0;
 		AdjList node = outIncident(g, i);
 		while(node != NULL){ // Out degree
 			count++;
@@ -77,7 +80,7 @@ NodeValues closenessCentrality(Graph g){
 				reachnode++;
 			}
 		}
-		throwAway.values[src] = (reachnode-1)*(reachnode-1)/(num-1)/totaldist;
+		throwAway.values[src] = (num-1)/totaldist;
 		freeShortestPaths(paths);
 	}
 	return throwAway;
@@ -169,7 +172,8 @@ NodeValues betweennessCentralityNormalised(Graph g){
 }
 
 void showNodeValues(NodeValues values){
-
+	for(int i = 0; i < values.noNodes; i++)
+		printf("%d: %f\n", i, values.values[i]);
 }
 
 void freeNodeValues(NodeValues values){
