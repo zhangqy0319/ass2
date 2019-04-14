@@ -15,13 +15,11 @@ static PredNodePtr newPredNode(Vertex);
 
 ShortestPaths dijkstra(Graph g, Vertex v) {
 	assert(g != NULL);
-	ShortestPaths throwAway = {0};
-	throwAway = newShortestPaths(g, v);
+	assert(numVerticies(g) > 1);
+	ShortestPaths throwAway = newShortestPaths(g, v);
 	throwAway.dist[v] = 0; // Set the distance to src equal 0
 	PQ todo = newPQ();
-	ItemPQ firstnode;
-	firstnode.key = v; 
-	firstnode.value = 0; 
+	ItemPQ firstnode = {.key = v, .value = 0};
 	addPQ(todo, firstnode);
 	
 	while (!PQEmpty(todo)){
@@ -40,9 +38,7 @@ ShortestPaths dijkstra(Graph g, Vertex v) {
 					free(delete);
 				}
 				throwAway.pred[dest] = newPredNode(curr);
-				ItemPQ node;
-				node.key = dest;
-				node.value = throwAway.dist[dest];
+				ItemPQ node = {.key = dest, .value = throwAway.dist[dest]};
 				addPQ(todo, node);
 			}
 			else if(throwAway.dist[curr] + weight == throwAway.dist[dest]){
