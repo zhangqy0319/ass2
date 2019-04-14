@@ -67,7 +67,8 @@ void showShortestPaths(ShortestPaths paths) {
 	printf("Node %d\n", paths.src);
 	printf("  Distance\n");
 	for(int i = 0; i < paths.noNodes; i++) {
-		printf("    %d : %d\n", i, paths.dist[i]);
+		if (paths.src == i) printf("    %d : X\n", i);
+		else printf("    %d : %d\n", i, paths.dist[i]);
 	}
 	printf("  Preds\n");
 	for(int i = 0; i < paths.noNodes; i++) {
