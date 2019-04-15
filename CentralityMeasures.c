@@ -11,16 +11,13 @@ NodeValues outDegreeCentrality(Graph g){
 		.noNodes = num,
 		.values = malloc(num * sizeof(double))
 	};
-// printf("fffdf\n");
 	for(int i = 0; i < num; i++){
 		double count = 0;
 		AdjList node = outIncident(g, i);
-// printf("fefqqq^^\n");
 		while(node != NULL){
 			count++;
 			node = node->next;
 		}
-// printf("qqoooo\n");
 		throwAway.values[i] = count;
 	}
 	return throwAway;
@@ -137,19 +134,17 @@ NodeValues betweennessCentrality(Graph g){
 							if (countpasslist[pathcurr][i] != 0)
 								countpasslist[dest][i] += countpasslist[pathcurr][i];
 						}
-						countpasslist[dest][pathcurr]++;
+						countpasslist[dest][pathcurr] += totalshortpath[pathcurr];
 						break;
 					}
 					pathcurr = path.pred[pathcurr]->v;
 				}
 				predcurr = predcurr->next;
 			}
-// printf("Src: %d, dest: %d\n",src,dest);
 			// Calculate and add Betweenness to throwAway
 			for(int i = 0; i < num; i++){
 				if (i == src || i == dest) continue;
 				double Betweenness = (countpasslist[dest][i] / totalshortpath[dest]);
-// printf("Betweenness: %f\n", Betweenness);
 				throwAway.values[i] += Betweenness;
 			}
 		}
