@@ -80,7 +80,10 @@ NodeValues closenessCentrality(Graph g){
 				reachnode++;
 			}
 		}
-		throwAway.values[src] = (num-1)/totaldist;
+		if(totaldist != 0) 
+			throwAway.values[src] = reachnode*reachnode/(num-1)/totaldist;
+		else throwAway.values[src] = 0;
+		
 		freeShortestPaths(paths);
 	}
 	return throwAway;
