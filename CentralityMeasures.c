@@ -121,33 +121,35 @@ NodeValues betweennessCentrality(Graph g){
 		// Main process
 		while(!PQEmpty(todo)){
 			Vertex dest = dequeuePQ(todo).key;
-			// Focus on predecessors on the path
-			Vertex pathcurr = path.pred[dest]->v;
 			// Focus on the number of predecessors to dest
 			PredNode *predcurr = path.pred[dest]; 
 			while(predcurr != NULL){ // Analyse all predecessors
+				// Focus on predecessors on the path
+				Vertex pathcurr = predcurr->v;
+				// If dest is connected to src
+				if (pathcurr == src) totalshortpath[dest]++;
 				while(pathcurr != src){
 					// If curr vertex has been analysed, use it data
 					if (totalshortpath[pathcurr] != 0){
 						totalshortpath[dest] += totalshortpath[pathcurr];
-						// Add the vertices that the path to curr will pass
+						// Copy and add the vertices that the path to curr will pass
 						for(int i = 0; i < num; i++){
-							if (countpasslist[pathcurr][i] != 0){
+							if (countpasslist[pathcurr][i] != 0)
 								countpasslist[dest][i] += countpasslist[pathcurr][i];
-							}
-							countpasslist[dest][pathcurr]++;
 						}
+						countpasslist[dest][pathcurr]++;
 						break;
 					}
 					pathcurr = path.pred[pathcurr]->v;
 				}
-				// If dest is connected to src
-				if (pathcurr == src) totalshortpath[dest]++;
 				predcurr = predcurr->next;
 			}
+// printf("Src: %d, dest: %d\n",src,dest);
 			// Calculate and add Betweenness to throwAway
 			for(int i = 0; i < num; i++){
+				if (i == src || i == dest) continue;
 				double Betweenness = (countpasslist[dest][i] / totalshortpath[dest]);
+// printf("Betweenness: %f\n", Betweenness);
 				throwAway.values[i] += Betweenness;
 			}
 		}
