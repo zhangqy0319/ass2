@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#define INF 2147483647 // = 2^31-1
+#define INF __INT_MAX__
 
 typedef struct PredNode *PredNodePtr;
 
