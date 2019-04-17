@@ -12,8 +12,6 @@
 
 static int cmp(int, int, int method);
 static Dendrogram newDNode(int vertex);
-static int index2key(int r, int c, int size);
-static void key2index(int key, int size, int* index);
 
 /* 
  * Finds Dendrogram using Lance-Williams algorithm (as discussed in the specs) 
@@ -25,7 +23,7 @@ static void key2index(int key, int size, int* index);
  * 
  */
 Dendrogram LanceWilliamsHAC(Graph g, int method) {
-	int num = numVerticies(g), boundary;
+	int num = numVerticies(g), boundary, size = num;
 	if (method == 1) boundary = -1;
 	else if (method == 2) boundary = INF;
 	int **dist = malloc(num * sizeof(int*));
@@ -35,35 +33,41 @@ Dendrogram LanceWilliamsHAC(Graph g, int method) {
 		DDlist[i] = newDNode(i);
 		for (Vertex j = 0; j < num; j++) dist[i][j] = boundary;
 	}
-	PQ todo = newPQ();
 
-	// Set up dist table and add to PQ according to dist
+	// Set up dist table
 	for (Vertex src = 0; src < num; src++){
 		AdjList curr = outIncident(g, src);
 		while (curr != NULL){
 			Vertex dest = curr->w;
 			dist[src][dest] = curr->weight;
-			if (src > dest){
-				int value = cmp(dist[src][dest], dist[dest][src], method);
-				dist[src][dest] = dist[dest][src] = value;
-				if (method == 1) value = INF - value;
-				ItemPQ node = {.key = index2key(src, dest, num), .value = value};
-				addPQ(todo, node);
-			}
-			curr = curr->next;
+			if (cmp(dist[src][dest], dist[dest][src], method))
+				dist[dest][src] = dist[src][dest];
+			else dist[src][dest] = dist[dest][src];
+		curr = curr->next;			
 		}
 	}
-
-	// Merge leftward in the DDlist
-
-	int index[2] = {boundary, boundary};
-	while(!PQEmpty(todo)){
-		int key = dequeuePQ(todo).key;
-		key2index(key, num, index);
-		int findsrc = index[0];
-		int finddest = index[1];
+	for (int i = 0; i<num;i++){
+		for(int j = 0; j<num;j++){
+			printf("%d, ",dist[i][j]);
+		}
+		printf("\n");
+	}
+	// Merge
+	int findsrc, finddest, findvalue;
+	while(size > 1){
+		findsrc = finddest = findvalue = boundary;
+printf("num: %d\n",size);
+		for (int i = 1; i < num; i++){
+			for (int j = 0; j < i; j++){
+				if (cmp(dist[i][j], findvalue, method)){
+					findsrc = i;
+					finddest = j;
+					findvalue = dist[i][j];
+				}
+			}
+		}
+		dist[findsrc][finddest] = boundary;
 		Dendrogram left = DDlist[finddest], right = DDlist[findsrc];
-
 		// while the node does not point itself or not point the joint
 		// It means the node has merged to main tree, jump to main tree
 		while (right->vertex != findsrc && right->vertex != boundary)
@@ -74,25 +78,25 @@ Dendrogram LanceWilliamsHAC(Graph g, int method) {
 			left = DDlist[ position ];
 		}
 		// Two nodes/trees have merged
-		if (left == right) continue;
+		if (left == right && left->vertex != boundary) continue;
 		// The merge position is a node
 		if (position == boundary) position = left->vertex;
 		Dendrogram joint = newDNode(boundary);
 		joint->left = left;
+printf("left ver: %d\n", left->vertex);
 		joint->right = right;
+printf("right ver: %d\n", right->vertex);
 		DDlist[position] = joint; // Plant a tree
 		// Contain the position where the node was merged
-		DDlist[right->vertex] = newDNode(left->vertex);
+		DDlist[right->vertex] = newDNode(position);
+		size--;
 	}
-
 	// Final process
 	Dendrogram root = DDlist[0];
 	DDlist[0] = NULL;
 	for (int i = 0; i < num; i++) free(dist[i]);
 	for (int i = 1; i < num; i++) free(DDlist[i]);
-	free(DDlist);
 	free(dist);
-	free(todo);
 	return root;
 }
 
@@ -107,8 +111,8 @@ void freeDendrogram(Dendrogram d) {
 // Helper Function //
 
 static int cmp(int a, int b, int method){
-	if (method == 1) return (a > b ? a : b);
-	if (method == 2) return (a < b ? a : b);
+	if (method == 1) return (a > b);
+	if (method == 2) return (a < b);
 	return -1;
 }
 
@@ -117,13 +121,4 @@ static Dendrogram newDNode(int vertex){
 	new->left = new->right = NULL;
 	new->vertex = vertex;
 	return new;
-}
-
-static int index2key(int r, int c, int size){
-	return r *  size + c;
-}
-
-static void key2index(int key, int size, int* index){
-	index[0] = key / size;
-	index[1] = key % size;
 }
