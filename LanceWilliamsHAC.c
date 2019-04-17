@@ -46,19 +46,21 @@ Dendrogram LanceWilliamsHAC(Graph g, int method) {
 		curr = curr->next;			
 		}
 	}
-	for (int i = 0; i<num;i++){
-		for(int j = 0; j<num;j++){
-			printf("%d, ",dist[i][j]);
-		}
-		printf("\n");
-	}
+	// for (int i = 0; i<num;i++){
+	// 	for(int j = 0; j<=i;j++){
+	// 		printf("%d, ",dist[i][j]);
+	// 	}
+	// 	printf("\n");
+	// }
 	// Merge
 	int findsrc, finddest, findvalue;
 	while(size > 1){
 		findsrc = finddest = findvalue = boundary;
-printf("num: %d\n",size);
-		for (int i = 1; i < num; i++){
-			for (int j = 0; j < i; j++){
+// printf("num: %d\n",size);
+// for (int i = 0; i < num; i++) printf("%d, ",DDlist[i]->vertex);
+// printf("\n");
+		for (int i = num-1; i > 0; i--){
+			for (int j = i-1; j >= 0; j--){
 				if (cmp(dist[i][j], findvalue, method)){
 					findsrc = i;
 					finddest = j;
@@ -70,25 +72,32 @@ printf("num: %d\n",size);
 		Dendrogram left = DDlist[finddest], right = DDlist[findsrc];
 		// while the node does not point itself or not point the joint
 		// It means the node has merged to main tree, jump to main tree
-		while (right->vertex != findsrc && right->vertex != boundary)
+		int mergeout = findsrc;
+		while (right->vertex != findsrc && right->vertex != boundary){
+			mergeout = right->vertex;
 			right = DDlist[ right->vertex ];
-		int position = boundary; // Used to save the merge postition in DDlist
+		}
+		int mergein = finddest; // Used to save the merge postition in DDlist
 		while (left->vertex != finddest && left->vertex != boundary){
-			position = left->vertex;
-			left = DDlist[ position ];
+			mergein = left->vertex;
+			left = DDlist[ mergein ];
 		}
 		// Two nodes/trees have merged
-		if (left == right && left->vertex != boundary) continue;
-		// The merge position is a node
-		if (position == boundary) position = left->vertex;
+		if (left == right) continue;
+		// Merge leftward always
+		if (mergein > mergeout){
+			int tmp = mergein;
+			mergein = mergeout;
+			mergeout = tmp;
+		}
 		Dendrogram joint = newDNode(boundary);
 		joint->left = left;
-printf("left ver: %d\n", left->vertex);
+// printf("left ver: %d\n", left->vertex);
 		joint->right = right;
-printf("right ver: %d\n", right->vertex);
-		DDlist[position] = joint; // Plant a tree
+// printf("right ver: %d\n", right->vertex);
+		DDlist[mergein] = joint; // Plant a tree
 		// Contain the position where the node was merged
-		DDlist[right->vertex] = newDNode(position);
+		DDlist[mergeout] = newDNode(mergein);
 		size--;
 	}
 	// Final process
