@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include "LanceWilliamsHAC.h"
 #include "Graph.h"
-#include "PQ.h"
+
 #define numVertices numVerticies
 #define INF __INT_MAX__
 
@@ -26,6 +26,7 @@ Dendrogram LanceWilliamsHAC(Graph g, int method) {
 	int num = numVerticies(g), boundary, size = num;
 	if (method == 1) boundary = -1;
 	else if (method == 2) boundary = INF;
+
 	int **dist = malloc(num * sizeof(int*));
 	Dendrogram *DDlist = malloc(num * sizeof(Dendrogram));
 	for (Vertex i = 0; i < num; i++){
@@ -46,19 +47,11 @@ Dendrogram LanceWilliamsHAC(Graph g, int method) {
 		curr = curr->next;			
 		}
 	}
-	// for (int i = 0; i<num;i++){
-	// 	for(int j = 0; j<=i;j++){
-	// 		printf("%d, ",dist[i][j]);
-	// 	}
-	// 	printf("\n");
-	// }
-	// Merge
+
 	int findsrc, finddest, findvalue;
 	while(size > 1){
 		findsrc = finddest = findvalue = boundary;
-// printf("num: %d\n",size);
-// for (int i = 0; i < num; i++) printf("%d, ",DDlist[i]->vertex);
-// printf("\n");
+		// Iterate the whole table to find the min/max
 		for (int i = num-1; i > 0; i--){
 			for (int j = i-1; j >= 0; j--){
 				if (cmp(dist[i][j], findvalue, method)){
@@ -68,21 +61,24 @@ Dendrogram LanceWilliamsHAC(Graph g, int method) {
 				}
 			}
 		}
+		// Remove that value in the table
 		dist[findsrc][finddest] = boundary;
 		Dendrogram left = DDlist[finddest], right = DDlist[findsrc];
+
 		// while the node does not point itself or not point the joint
-		// It means the node has merged to main tree, jump to main tree
-		int mergeout = findsrc;
+		// The node will point to where the node merged into, jump to that node(tree)
+		int mergeout = findsrc; // Used to save the merge postition in DDlist
 		while (right->vertex != findsrc && right->vertex != boundary){
 			mergeout = right->vertex;
-			right = DDlist[ right->vertex ];
+			right = DDlist[ mergeout ];
 		}
 		int mergein = finddest; // Used to save the merge postition in DDlist
 		while (left->vertex != finddest && left->vertex != boundary){
 			mergein = left->vertex;
 			left = DDlist[ mergein ];
 		}
-		// Two nodes/trees have merged
+
+		// Two nodes/trees have merged, which means they have already been in the same cluster
 		if (left == right) continue;
 		// Merge leftward always
 		if (mergein > mergeout){
@@ -90,34 +86,34 @@ Dendrogram LanceWilliamsHAC(Graph g, int method) {
 			mergein = mergeout;
 			mergeout = tmp;
 		}
+
 		Dendrogram joint = newDNode(boundary);
 		joint->left = left;
-// printf("left ver: %d\n", left->vertex);
 		joint->right = right;
-// printf("right ver: %d\n", right->vertex);
-		DDlist[mergein] = joint; // Plant a tree
-		// Contain the position where the node was merged
+		DDlist[mergein] = joint;
+		// Contain the position where the node was merged into
 		DDlist[mergeout] = newDNode(mergein);
 		size--;
 	}
-	// Final process
+
+	// Free and Return
 	Dendrogram root = DDlist[0];
 	DDlist[0] = NULL;
 	for (int i = 0; i < num; i++) free(dist[i]);
-	for (int i = 1; i < num; i++) free(DDlist[i]);
+	for (int i = 1; i < num; i++) freeDendrogram(DDlist[i]);
 	free(dist);
 	return root;
 }
 
 
 void freeDendrogram(Dendrogram d) {
+	if (d == NULL) return;
 	if (d->left != NULL) freeDendrogram(d->left);
 	if (d->right != NULL) freeDendrogram(d->right);
 	free(d);
-	return;
 }
 
-// Helper Function //
+// Helper Functions
 
 static int cmp(int a, int b, int method){
 	if (method == 1) return (a > b);

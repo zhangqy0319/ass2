@@ -12,10 +12,10 @@ typedef struct PredNode *PredNodePtr;
 static ShortestPaths newShortestPaths(Graph, Vertex);
 static PredNodePtr newPredNode(Vertex);
 
-
 ShortestPaths dijkstra(Graph g, Vertex v) {
 	assert(g != NULL);
 	assert(numVerticies(g) > 1);
+
 	ShortestPaths throwAway = newShortestPaths(g, v);
 	throwAway.dist[v] = 0; // Set the distance to src equal 0
 	PQ todo = newPQ();
@@ -96,6 +96,8 @@ void  freeShortestPaths(ShortestPaths paths) {
 	}
 	free(paths.pred);
 }
+
+// Helper functions
 
 static ShortestPaths newShortestPaths(Graph g, Vertex v){
 	ShortestPaths new;

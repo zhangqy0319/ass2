@@ -127,6 +127,7 @@ AdjList inIncident(Graph g, Vertex v) {
 void  freeGraph(Graph g) {
 	if (g == NULL) return;
 
+	// Free each node of the outnode list
 	for(int i = 0; i < g->nV; i++) {
 		AdjList curr = g->outNodeList[i], old;
 		while(curr != NULL) {
@@ -135,6 +136,8 @@ void  freeGraph(Graph g) {
 			free(old);
 		}
 	}
+
+	// Free each node of the innode list
 	for(int i = 0; i < g->nV; i++) {
 		AdjList curr = g->inNodeList[i], old;
 		while(curr != NULL) {
@@ -147,6 +150,8 @@ void  freeGraph(Graph g) {
 	free(g->inNodeList);
 	free(g);
 }
+
+// Helper functions
 
 static AdjList newAdjListnode(Vertex w, int weight) {
 	AdjList node = malloc(sizeof(node));
