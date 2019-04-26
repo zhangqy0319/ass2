@@ -33,7 +33,7 @@ int PQEmpty(PQ p) {
 
 void addPQ(PQ pq, ItemPQ element) {
 	assert(pq != NULL);
-	assert(element.value > 0);
+	assert(element.value >= 0);
 
 	PQnode new = newPQnode(element), curr = pq->head;
 	if(pq->len == 0) pq->head = new;
@@ -88,7 +88,7 @@ ItemPQ dequeuePQ(PQ pq) {
 
 void updatePQ(PQ pq, ItemPQ element) {
 	assert(pq != NULL);
-	assert(element.value > 0);
+	assert(element.value >= 0);
 
 	PQnode curr = pq->head, mark = NULL;
 	while(curr != NULL){ // Find the same key
