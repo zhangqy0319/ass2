@@ -18,10 +18,9 @@ struct PQRep {
 
 static PQnode newPQnode(ItemPQ item);
 
-
 PQ newPQ() {
 	PQ pq = malloc(sizeof(PQ));
-	if (pq == NULL) return NULL;
+	assert(pq != NULL);
 	pq->len = 0;
 	pq->head = NULL;
 	return pq;
@@ -34,13 +33,15 @@ int PQEmpty(PQ p) {
 
 void addPQ(PQ pq, ItemPQ element) {
 	assert(pq != NULL);
+	assert(element.value >= 0);
+
 	PQnode new = newPQnode(element), curr = pq->head;
 	if(pq->len == 0) pq->head = new;
 	else{
 		while(curr != NULL){ // Iterate the whole list to check if it exists
 			if (curr->item.key == element.key){
 				updatePQ(pq, element);
-				free(new);
+				free(new); // Delete the new node
 				return;
 			}
 			curr = curr->next;
@@ -55,6 +56,8 @@ void addPQ(PQ pq, ItemPQ element) {
 
 ItemPQ dequeuePQ(PQ pq) {
 	assert(pq != NULL);
+	assert(!PQEmpty(pq));
+
 	ItemPQ throwAway = {0};
 	if (pq->len == 1){
 		throwAway = pq->head->item;
@@ -85,6 +88,8 @@ ItemPQ dequeuePQ(PQ pq) {
 
 void updatePQ(PQ pq, ItemPQ element) {
 	assert(pq != NULL);
+	assert(element.value >= 0);
+
 	PQnode curr = pq->head, mark = NULL;
 	while(curr != NULL){ // Find the same key
 		if (curr->item.key == element.key){
@@ -114,17 +119,16 @@ void updatePQ(PQ pq, ItemPQ element) {
 	}
 }
 
-void  showPQ(PQ pq) {
+void showPQ(PQ pq) {
 	assert(pq != NULL);
 	PQnode curr = pq->head;
 	while (curr != NULL){
-		printf("Key: %d, Value: %d\n",curr->item.key,curr->item.value);
+		printf("Key: %d, Value: %d\n", curr->item.key, curr->item.value);
 		curr = curr->next;
 	}
-	
 }
 
-void  freePQ(PQ pq) {
+void freePQ(PQ pq) {
 	assert(pq != NULL);
 	PQnode curr = pq->head, old;
 	while (curr != NULL){
@@ -134,6 +138,8 @@ void  freePQ(PQ pq) {
 	}
 	free(pq);
 }
+
+// Helper functions
 
 static PQnode newPQnode(ItemPQ item){
 	PQnode node = malloc(sizeof(node));

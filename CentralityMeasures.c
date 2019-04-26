@@ -22,6 +22,7 @@ NodeValues outDegreeCentrality(Graph g){
 	}
 	return throwAway;
 }
+
 NodeValues inDegreeCentrality(Graph g){
 	int num = numVerticies(g);
 	NodeValues throwAway = {
@@ -39,8 +40,10 @@ NodeValues inDegreeCentrality(Graph g){
 	}
 	return throwAway;
 }
+
 NodeValues degreeCentrality(Graph g) {
 	int num = numVerticies(g);
+
 	NodeValues throwAway = {
 		.noNodes = num,
 		.values = malloc(num * sizeof(double))
@@ -156,7 +159,6 @@ NodeValues betweennessCentrality(Graph g){
 		freePQ(todo);
 		freeShortestPaths(path);
 	}
-
 	return throwAway;
 }
 
